@@ -9,4 +9,4 @@ and proceeds to display the cartridge header. It then provides an option to down
 ![FPGA & Socket](https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/fpga.jpg?raw=true)
 
 
-![Client](https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/client.jpg?raw=true)
+![Client](https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/client.png?raw=true)
