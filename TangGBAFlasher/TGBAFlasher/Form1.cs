@@ -69,7 +69,7 @@ namespace TGBAFlasher
                             labelUnit.Text = "Unit Code: " + header[179].ToString("X2");
                             labelDevice.Text = "Device Type: " + header[180].ToString("X2");
                             labelVersion.Text = "Version: " + header[188].ToString("X2");
-                            labelChecksum.Text = "Checksum: " + header[189].ToString("X2");
+                            labelChecksum.Text = "Checksum: " + header[189].ToString("X2") + " (" + (flasher.ChecksumTest(header, header[189]) ? "OK" : "BAD") + ")";
 
                             var startAddress = 8 + (((int)header[0]) << 2) +
                                                 (((int)header[1]) << 10) +

@@ -1,5 +1,7 @@
 ﻿// (C) 2024 PeevishDave. Peevo.art
 using System.IO.Ports;
+using static System.Net.Mime.MediaTypeNames;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace TGBAFlasher
 {
@@ -123,6 +125,18 @@ namespace TGBAFlasher
             Busy = false;
 
             return downloadedRom.ToArray();
+        }
+
+        public bool ChecksumTest(byte[] header, byte check)
+        {
+            int calculatedChk = 0;
+
+            for (int i = 0xA0; i <= 0xBC; i++)
+            {
+                calculatedChk -= header[i];
+            }
+
+            return ((byte)((calculatedChk - 0x19) & 0xFF)) == check;
         }
 
         void SendData(byte[] data)
