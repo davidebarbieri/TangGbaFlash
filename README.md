@@ -10,3 +10,37 @@ and proceeds to display the cartridge header. It then provides an option to down
   <img src="https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/fpga.jpg?raw=true" alt="FPGA & Socket" width="400"/>
   <img src="https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/client.png?raw=true" alt="Client" width="280"/>
 </p>
+
+## GPIO Connections
+
+
+| GBAPak   | GPIO PIN |
+| -------- | -------- |
+| A23      | 86       |
+| A22      | 79       |
+| A21      | 72       |
+| A20      | 71       |
+| A19      | 53       |
+| A18      | 52       |
+| A17      | 73       |
+| A16      | 74       |
+| A/D15    | 75       |
+| A/D14    | 85       |
+| A/D13    | 77       |
+| A/D12    | 15       |
+| A/D11    | 16       |
+| A/D10    | 27       |
+| A/D9     | 28       |
+| A/D8     | 25       |
+| A/D7     | 26       |
+| A/D6     | 29       |
+| A/D5     | 30       |
+| A/D4     | 31       |
+| A/D3     | 17       |
+| A/D2     | 20       |
+| A/D1     | 19       |
+| A/D0     | 18       |
+| WR       | 51       |
+| RD       | 48       |
+| CS       | 55       |
+| CS2      | 49       |
