@@ -7,6 +7,6 @@ The WinForms client enumerates available COM ports, lets the user select the app
 and proceeds to display the cartridge header. It then provides an option to download and save the entire ROM to disk.
 
 <p float="left">
-  <img src="https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/fpga.jpg?raw=true" alt="FPGA & Socket" width="500"/>
-  <img src="https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/client.png?raw=true" alt="Client" width="350"/>
+  <img src="https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/fpga.jpg?raw=true" alt="FPGA & Socket" width="400"/>
+  <img src="https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/client.png?raw=true" alt="Client" width="280"/>
 </p>
