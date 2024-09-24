@@ -80,7 +80,7 @@ namespace TGBAFlasher
             // 
             // buttonDownload
             // 
-            buttonDownload.Location = new Point(608, 287);
+            buttonDownload.Location = new Point(609, 296);
             buttonDownload.Name = "buttonDownload";
             buttonDownload.Size = new Size(108, 34);
             buttonDownload.TabIndex = 4;
@@ -91,7 +91,7 @@ namespace TGBAFlasher
             // textBoxReceived
             // 
             textBoxReceived.Font = new Font("Cascadia Mono", 8F);
-            textBoxReceived.Location = new Point(14, 367);
+            textBoxReceived.Location = new Point(15, 376);
             textBoxReceived.Multiline = true;
             textBoxReceived.Name = "textBoxReceived";
             textBoxReceived.ReadOnly = true;
@@ -111,7 +111,7 @@ namespace TGBAFlasher
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(305, 290);
+            label2.Location = new Point(306, 299);
             label2.Name = "label2";
             label2.Size = new Size(125, 25);
             label2.TabIndex = 7;
@@ -122,14 +122,14 @@ namespace TGBAFlasher
             comboCartridge.DropDownStyle = ComboBoxStyle.DropDownList;
             comboCartridge.FormattingEnabled = true;
             comboCartridge.Items.AddRange(new object[] { "4MB", "8MB", "16MB", "32MB" });
-            comboCartridge.Location = new Point(436, 287);
+            comboCartridge.Location = new Point(437, 296);
             comboCartridge.Name = "comboCartridge";
             comboCartridge.Size = new Size(165, 33);
             comboCartridge.TabIndex = 8;
             // 
             // buttonSave
             // 
-            buttonSave.Location = new Point(608, 668);
+            buttonSave.Location = new Point(609, 677);
             buttonSave.Name = "buttonSave";
             buttonSave.Size = new Size(108, 31);
             buttonSave.TabIndex = 9;
@@ -140,7 +140,7 @@ namespace TGBAFlasher
             // checkStrip
             // 
             checkStrip.AutoSize = true;
-            checkStrip.Location = new Point(481, 670);
+            checkStrip.Location = new Point(482, 679);
             checkStrip.Name = "checkStrip";
             checkStrip.Size = new Size(120, 29);
             checkStrip.TabIndex = 10;
@@ -151,7 +151,7 @@ namespace TGBAFlasher
             // 
             statusStrip1.ImageScalingSize = new Size(24, 24);
             statusStrip1.Items.AddRange(new ToolStripItem[] { statusLabel });
-            statusStrip1.Location = new Point(0, 710);
+            statusStrip1.Location = new Point(0, 729);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(729, 32);
             statusStrip1.TabIndex = 11;
@@ -165,7 +165,7 @@ namespace TGBAFlasher
             // 
             // progressBar1
             // 
-            progressBar1.Location = new Point(25, 327);
+            progressBar1.Location = new Point(26, 336);
             progressBar1.Name = "progressBar1";
             progressBar1.Size = new Size(691, 34);
             progressBar1.TabIndex = 12;
@@ -173,7 +173,7 @@ namespace TGBAFlasher
             // labelTitle
             // 
             labelTitle.AutoSize = true;
-            labelTitle.Location = new Point(13, 66);
+            labelTitle.Location = new Point(15, 62);
             labelTitle.Name = "labelTitle";
             labelTitle.Size = new Size(99, 25);
             labelTitle.TabIndex = 13;
@@ -182,7 +182,7 @@ namespace TGBAFlasher
             // labelCode
             // 
             labelCode.AutoSize = true;
-            labelCode.Location = new Point(14, 91);
+            labelCode.Location = new Point(14, 94);
             labelCode.Name = "labelCode";
             labelCode.Size = new Size(109, 25);
             labelCode.TabIndex = 14;
@@ -191,7 +191,7 @@ namespace TGBAFlasher
             // labelMaker
             // 
             labelMaker.AutoSize = true;
-            labelMaker.Location = new Point(14, 141);
+            labelMaker.Location = new Point(15, 157);
             labelMaker.Name = "labelMaker";
             labelMaker.Size = new Size(65, 25);
             labelMaker.TabIndex = 15;
@@ -200,7 +200,7 @@ namespace TGBAFlasher
             // labelFixed
             // 
             labelFixed.AutoSize = true;
-            labelFixed.Location = new Point(17, 183);
+            labelFixed.Location = new Point(437, 250);
             labelFixed.Name = "labelFixed";
             labelFixed.Size = new Size(109, 25);
             labelFixed.TabIndex = 16;
@@ -209,7 +209,7 @@ namespace TGBAFlasher
             // labelDevice
             // 
             labelDevice.AutoSize = true;
-            labelDevice.Location = new Point(182, 208);
+            labelDevice.Location = new Point(14, 187);
             labelDevice.Name = "labelDevice";
             labelDevice.Size = new Size(108, 25);
             labelDevice.TabIndex = 17;
@@ -218,7 +218,7 @@ namespace TGBAFlasher
             // labelUnit
             // 
             labelUnit.AutoSize = true;
-            labelUnit.Location = new Point(17, 208);
+            labelUnit.Location = new Point(15, 220);
             labelUnit.Name = "labelUnit";
             labelUnit.Size = new Size(95, 25);
             labelUnit.TabIndex = 18;
@@ -227,7 +227,7 @@ namespace TGBAFlasher
             // labelVersion
             // 
             labelVersion.AutoSize = true;
-            labelVersion.Location = new Point(14, 116);
+            labelVersion.Location = new Point(15, 126);
             labelVersion.Name = "labelVersion";
             labelVersion.Size = new Size(74, 25);
             labelVersion.TabIndex = 19;
@@ -236,7 +236,7 @@ namespace TGBAFlasher
             // labelChecksum
             // 
             labelChecksum.AutoSize = true;
-            labelChecksum.Location = new Point(182, 183);
+            labelChecksum.Location = new Point(437, 225);
             labelChecksum.Name = "labelChecksum";
             labelChecksum.Size = new Size(97, 25);
             labelChecksum.TabIndex = 20;
@@ -245,7 +245,7 @@ namespace TGBAFlasher
             // pictureLogo
             // 
             pictureLogo.BorderStyle = BorderStyle.FixedSingle;
-            pictureLogo.Location = new Point(285, 91);
+            pictureLogo.Location = new Point(291, 88);
             pictureLogo.Name = "pictureLogo";
             pictureLogo.Size = new Size(416, 64);
             pictureLogo.SizeMode = PictureBoxSizeMode.StretchImage;
@@ -255,7 +255,7 @@ namespace TGBAFlasher
             // labelStartAddress
             // 
             labelStartAddress.AutoSize = true;
-            labelStartAddress.Location = new Point(18, 242);
+            labelStartAddress.Location = new Point(15, 250);
             labelStartAddress.Name = "labelStartAddress";
             labelStartAddress.Size = new Size(122, 25);
             labelStartAddress.TabIndex = 22;
@@ -264,7 +264,7 @@ namespace TGBAFlasher
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(285, 63);
+            label3.Location = new Point(285, 61);
             label3.Name = "label3";
             label3.Size = new Size(57, 25);
             label3.TabIndex = 23;
@@ -272,7 +272,7 @@ namespace TGBAFlasher
             // 
             // Form1
             // 
-            ClientSize = new Size(729, 742);
+            ClientSize = new Size(729, 761);
             Controls.Add(label3);
             Controls.Add(labelStartAddress);
             Controls.Add(pictureLogo);

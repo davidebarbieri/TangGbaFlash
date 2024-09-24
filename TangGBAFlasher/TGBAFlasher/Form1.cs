@@ -62,16 +62,18 @@ namespace TGBAFlasher
                             statusLabel.Text = "Header received";
                             textBoxReceived.Text = PrintHex(header);
 
+                            var makerString = GetStringFromHeader(header, 176, 2);
+
                             labelTitle.Text = "Game Title: " + GetStringFromHeader(header, 160, 12);
                             labelCode.Text = "Game Code: " + GetStringFromHeader(header, 172, 4);
-                            labelMaker.Text = "Maker: " + GetStringFromHeader(header, 176, 2);
+                            labelMaker.Text = "Maker: " + Vendors.CodeToName(makerString) + " (" + makerString + ")";
                             labelFixed.Text = "Fixed Check: " + ((header[178] == 0x96) ? "OK" : "FAIL");
                             labelUnit.Text = "Unit Code: " + header[179].ToString("X2");
                             labelDevice.Text = "Device Type: " + header[180].ToString("X2");
                             labelVersion.Text = "Version: " + header[188].ToString("X2");
                             labelChecksum.Text = "Checksum: " + header[189].ToString("X2") + " (" + (flasher.ChecksumTest(header, header[189]) ? "OK" : "BAD") + ")";
 
-                            var startAddress = 8 + (((int)header[0]) << 2) +
+                            var startAddress = 4 + (((int)header[0]) << 2) +
                                                 (((int)header[1]) << 10) +
                                                 (((int)header[2]) << 18);
 
