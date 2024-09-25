@@ -7,6 +7,7 @@ namespace TGBAFlasher
 {
     public class GBAFlasher
     {
+        public System.Action<SerialError, bool> onError;
 
         public bool Busy { get; private set; }
 
@@ -31,6 +32,12 @@ namespace TGBAFlasher
             };
 
             _serialPort.Open();
+            _serialPort.ErrorReceived += new SerialErrorReceivedEventHandler(OnError);
+        }
+
+        void OnError(object sender, SerialErrorReceivedEventArgs e)
+        {
+            onError?.Invoke(e.EventType, _serialPort.IsOpen);
         }
 
         public void ClosePort()
@@ -41,16 +48,24 @@ namespace TGBAFlasher
             }
         }
 
-        public async Task<byte[]> DownloadHeader()
+        public async Task<byte[]?> DownloadHeader()
         {
+            return await DownloadHeader(COMMAND_HEADER, 0);
+        }
+
+        async Task<byte[]?> DownloadHeader(byte[] command, int discardBytes)
+        {
+            if (!_serialPort.IsOpen)
+                return null;
+
             Busy = true;
             _serialPort.DiscardInBuffer();
 
-            SendData(COMMAND_HEADER);
+            SendData(command);
 
             int timeWait = 0;
 
-            while (_serialPort.BytesToRead < header.Length)
+            while (_serialPort.BytesToRead - discardBytes < header.Length)
             {
                 if (timeWait > 1000)
                 {
@@ -58,23 +73,96 @@ namespace TGBAFlasher
                         MessageBox.Show($"Incomplete response from Serial Port");
                     else
                         MessageBox.Show($"No response from Serial Port");
-                    break;
+                    Busy = false;
+                    return null;
                 }
 
                 timeWait += 10;
                 await Task.Delay(10);
             }
 
+            for (int i=0; i<discardBytes; ++i)
+                _serialPort.ReadByte();
+            
             _serialPort.Read(header, 0, header.Length);
-
 
             Busy = false;
 
             return header.ToArray();
         }
 
-        public async Task<byte[]> DownloadROM(int cartSizeIndex, System.Action<int> onProgress)
+        public async Task<int?> DetectSize()
         {
+            if (!_serialPort.IsOpen)
+                return null;
+
+            var headerResult = await DownloadHeader();
+
+            if (headerResult == null)
+                return null;
+
+            var duplicateResult = await DownloadHeader(COMMAND_DUPLICATE4, 2);
+
+            if (duplicateResult == null)
+                return null;
+
+            bool isDuplicate = true;
+            for (int i = 0; i < duplicateResult.Length; i++)
+            {
+                if (duplicateResult[i] != headerResult[i])
+                {
+                    isDuplicate = false;
+                    break;
+                }
+            }
+
+            if (isDuplicate)
+                return 0; // 4MB
+
+            duplicateResult = await DownloadHeader(COMMAND_DUPLICATE8, 2);
+
+            if (duplicateResult == null)
+                return null;
+
+            isDuplicate = true;
+            for (int i = 0; i < duplicateResult.Length; i++)
+            {
+                if (duplicateResult[i] != headerResult[i])
+                {
+                    isDuplicate = false;
+                    break;
+                }
+            }
+
+            if (isDuplicate)
+                return 1; // 8MB
+
+            duplicateResult = await DownloadHeader(COMMAND_DUPLICATE16, 2);
+
+            if (duplicateResult == null)
+                return null;
+
+            isDuplicate = true;
+            for (int i = 0; i < duplicateResult.Length; i++)
+            {
+                if (duplicateResult[i] != headerResult[i])
+                {
+                    isDuplicate = false;
+                    break;
+                }
+            }
+
+            if (isDuplicate)
+                return 2; // 16MB
+
+            return 3; // 32MB
+        }
+
+        public async Task<byte[]?> DownloadROM(int cartSizeIndex, System.Action<int> onProgress)
+        {
+            if (!_serialPort.IsOpen)
+                return null;
+
             Busy = true;
             _serialPort.DiscardInBuffer();
             downloadedRom.Clear();
@@ -164,6 +252,10 @@ namespace TGBAFlasher
         List<byte> downloadedRom = new List<byte>();
 
         static byte[] COMMAND_HEADER = new byte[] { 104 };
+        static byte[] COMMAND_DUPLICATE4 = new byte[] { 106 };
+        static byte[] COMMAND_DUPLICATE8 = new byte[] { 107 };
+        static byte[] COMMAND_DUPLICATE16 = new byte[] { 108 };
+
         static byte[] COMMAND_DUMP4 = new byte[] { 97 };
         static byte[] COMMAND_DUMP8 = new byte[] { 98 };
         static byte[] COMMAND_DUMP16 = new byte[] { 99 };

@@ -1,5 +1,7 @@
 // (C) 2024 PeevishDave. Peevo.art
 
+using System.Diagnostics;
+using System.IO.Ports;
 using System.Text;
 
 namespace TGBAFlasher
@@ -9,9 +11,22 @@ namespace TGBAFlasher
         public Form1(GBAFlasher flasher)
         {
             this.flasher = flasher;
+
+            flasher.onError += OnError;
+
             InitializeComponent();
             LoadAvailablePorts();
-            SetupForm();
+            ResetForm();
+        }
+
+        void OnError(SerialError error, bool isClosed)
+        {
+            statusLabel.Text = "Transmit Error: " + error.ToString();
+
+            if (isClosed)
+            {
+                ResetForm();
+            }
         }
 
         private void LoadAvailablePorts()
@@ -25,12 +40,14 @@ namespace TGBAFlasher
             comboCartridge.SelectedIndex = 0;
         }
 
-        private void SetupForm()
+        private void ResetForm()
         {
             buttonOpenPort.Enabled = true;
             buttonClosePort.Enabled = false;
             buttonDownload.Enabled = false;
             buttonSave.Enabled = false;
+            buttonRefreshHeader.Enabled = false;
+            buttonDetectSize.Enabled = false;
         }
 
         private void buttonOpenPort_Click(object sender, EventArgs e)
@@ -46,42 +63,18 @@ namespace TGBAFlasher
 
             try
             {
-                flasher.OpenPort(comboBoxPorts.SelectedItem.ToString());
-                buttonOpenPort.Enabled = false;
-                buttonClosePort.Enabled = true;
-                buttonDownload.Enabled = true;
+                if (comboBoxPorts.SelectedItem != null)
+                {
+                    flasher.OpenPort(comboBoxPorts.SelectedItem.ToString());
 
-                statusLabel.Text = "Downloading header";
-                Task.Run(flasher.DownloadHeader).ContinueWith(
-                    (Task<byte[]> t) =>
-                    {
-                        Invoke(new MethodInvoker(delegate
-                        {
-                            var header = t.Result;
+                    buttonOpenPort.Enabled = false;
+                    buttonClosePort.Enabled = false;
+                    buttonDownload.Enabled = false;
+                    buttonDetectSize.Enabled = false;
+                    buttonRefreshHeader.Enabled = false;
 
-                            statusLabel.Text = "Header received";
-                            textBoxReceived.Text = PrintHex(header);
-
-                            var makerString = GetStringFromHeader(header, 176, 2);
-
-                            labelTitle.Text = "Game Title: " + GetStringFromHeader(header, 160, 12);
-                            labelCode.Text = "Game Code: " + GetStringFromHeader(header, 172, 4);
-                            labelMaker.Text = "Maker: " + Vendors.CodeToName(makerString) + " (" + makerString + ")";
-                            labelFixed.Text = "Fixed Check: " + ((header[178] == 0x96) ? "OK" : "FAIL");
-                            labelUnit.Text = "Unit Code: " + header[179].ToString("X2");
-                            labelDevice.Text = "Device Type: " + header[180].ToString("X2");
-                            labelVersion.Text = "Version: " + header[188].ToString("X2");
-                            labelChecksum.Text = "Checksum: " + header[189].ToString("X2") + " (" + (flasher.ChecksumTest(header, header[189]) ? "OK" : "BAD") + ")";
-
-                            var startAddress = 4 + (((int)header[0]) << 2) +
-                                                (((int)header[1]) << 10) +
-                                                (((int)header[2]) << 18);
-
-                            labelStartAddress.Text = "Start Address: " + startAddress.ToString("X2") + " (" + startAddress + ")";
-
-                            pictureLogo.Image = GBALogoDecoder.DecodeLogo(header);
-                        }));
-                    });
+                    RefreshHeader();
+                }
             }
             catch (Exception ex)
             {
@@ -95,7 +88,7 @@ namespace TGBAFlasher
                 return;
 
             flasher.ClosePort();
-            SetupForm();
+            ResetForm();
         }
 
         private void buttonSend_Click(object sender, EventArgs e)
@@ -106,6 +99,11 @@ namespace TGBAFlasher
             {
                 statusLabel.Text = "Downloading ROM";
 
+                buttonClosePort.Enabled = false;
+                buttonRefreshHeader.Enabled = false;
+                buttonDownload.Enabled = false;
+                buttonDetectSize.Enabled = false;
+
                 progressBar1.Value = 0;
                 Task.Run(() => flasher.DownloadROM(cartIndex, (percentage) =>
                 {
@@ -113,7 +111,7 @@ namespace TGBAFlasher
                     {
                         progressBar1.Value = percentage;
                     }));
-                })).ContinueWith((Task<byte[]> task) =>
+                })).ContinueWith((Task<byte[]?> task) =>
                 {
                     Invoke(new MethodInvoker(delegate
                     {
@@ -121,8 +119,13 @@ namespace TGBAFlasher
                         statusLabel.Text = "ROM downloaded";
                         textBoxReceived.Text = PrintHex(task.Result);
 
+                        buttonClosePort.Enabled = true;
+                        buttonRefreshHeader.Enabled = true;
+                        buttonDownload.Enabled = true;
+                        buttonDetectSize.Enabled = true;
+
                         buttonSave.Enabled = true;
-                        downloadedRom = task.Result;
+                        downloadedRom = task.Result ?? [];
                     }));
                 });
             }
@@ -140,8 +143,11 @@ namespace TGBAFlasher
 
 
 
-        string PrintHex(byte[] data)
+        string PrintHex(byte[]? data)
         {
+            if (data == null)
+                return "";
+
             StringBuilder sb = new StringBuilder();
 
             string representation = "";
@@ -208,7 +214,94 @@ namespace TGBAFlasher
             }
         }
 
+        private void buttonRefreshHeader_Click(object sender, EventArgs e)
+        {
+            RefreshHeader();
+        }
+
+        void RefreshHeader()
+        {
+            if (flasher.Busy)
+                return;
+
+            try
+            {
+
+                statusLabel.Text = "Downloading header";
+                Task.Run(flasher.DownloadHeader).ContinueWith(
+                    (Task<byte[]?> t) =>
+                    {
+                        Invoke(new MethodInvoker(delegate
+                        {
+                            var header = t.Result;
+
+                            if (header == null)
+                            {
+                                ResetForm();
+                                return;
+                            }
+
+                            statusLabel.Text = "Header received";
+                            textBoxReceived.Text = PrintHex(header);
+
+                            var makerString = GetStringFromHeader(header, 176, 2);
+
+                            labelTitle.Text = "Game Title: " + GetStringFromHeader(header, 160, 12);
+                            labelCode.Text = "Game Code: " + GetStringFromHeader(header, 172, 4);
+                            labelMaker.Text = "Maker: " + Vendors.CodeToName(makerString) + " (" + makerString + ")";
+                            labelFixed.Text = "Fixed Check: " + ((header[178] == 0x96) ? "OK" : "FAIL");
+                            labelUnit.Text = "Unit Code: " + header[179].ToString("X2");
+                            labelDevice.Text = "Device Type: " + header[180].ToString("X2");
+                            labelVersion.Text = "Version: " + header[188].ToString("X2");
+                            labelChecksum.Text = "Checksum: " + header[189].ToString("X2") + " (" + (flasher.ChecksumTest(header, header[189]) ? "OK" : "BAD") + ")";
+
+                            var startAddress = 4 + (((int)header[0]) << 2) +
+                                                (((int)header[1]) << 10) +
+                                                (((int)header[2]) << 18);
+
+                            labelStartAddress.Text = "Start Address: " + startAddress.ToString("X2") + " (" + startAddress + ")";
+
+                            pictureLogo.Image = GBALogoDecoder.DecodeLogo(header);
+
+                            buttonOpenPort.Enabled = false;
+                            buttonClosePort.Enabled = true;
+                            buttonDownload.Enabled = true;
+                            buttonRefreshHeader.Enabled = true;
+                            buttonDetectSize.Enabled = true;
+                        }));
+                    });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error while trying to refresh header: {ex.Message}");
+            }
+        }
+
         GBAFlasher flasher;
         byte[] downloadedRom;
+
+        private void buttonDetectSize_Click(object sender, EventArgs e)
+        {
+            Task.Run(() => flasher.DetectSize()).ContinueWith(result =>
+            {
+                Invoke(new MethodInvoker(delegate
+                {
+                    if (result.Result == null)
+                    {
+                        statusLabel.Text = "Unable to detect cartridge size";
+                    }
+                    else
+                    {
+                        comboCartridge.SelectedIndex = result.Result.Value;
+                        statusLabel.Text = "Cartridge size detected";
+                    }
+                }));
+            });
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo() { FileName = "https://www.peevo.art", UseShellExecute = true });
+        }
     }
 }

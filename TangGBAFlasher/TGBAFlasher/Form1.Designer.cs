@@ -34,19 +34,24 @@ namespace TGBAFlasher
             checkStrip = new CheckBox();
             statusStrip1 = new StatusStrip();
             statusLabel = new ToolStripStatusLabel();
-            progressBar1 = new ProgressBar();
-            labelTitle = new Label();
-            labelCode = new Label();
-            labelMaker = new Label();
-            labelFixed = new Label();
-            labelDevice = new Label();
-            labelUnit = new Label();
-            labelVersion = new Label();
-            labelChecksum = new Label();
-            pictureLogo = new PictureBox();
-            labelStartAddress = new Label();
+            progressBar1 = new ToolStripProgressBar();
+            groupHeader = new GroupBox();
+            buttonRefreshHeader = new Button();
             label3 = new Label();
+            labelStartAddress = new Label();
+            pictureLogo = new PictureBox();
+            labelChecksum = new Label();
+            labelVersion = new Label();
+            labelUnit = new Label();
+            labelDevice = new Label();
+            labelFixed = new Label();
+            labelMaker = new Label();
+            labelCode = new Label();
+            labelTitle = new Label();
+            buttonDetectSize = new Button();
+            linkLabel1 = new LinkLabel();
             statusStrip1.SuspendLayout();
+            groupHeader.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)pictureLogo).BeginInit();
             SuspendLayout();
             // 
@@ -80,7 +85,8 @@ namespace TGBAFlasher
             // 
             // buttonDownload
             // 
-            buttonDownload.Location = new Point(609, 296);
+            buttonDownload.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            buttonDownload.Location = new Point(625, 365);
             buttonDownload.Name = "buttonDownload";
             buttonDownload.Size = new Size(108, 34);
             buttonDownload.TabIndex = 4;
@@ -91,12 +97,12 @@ namespace TGBAFlasher
             // textBoxReceived
             // 
             textBoxReceived.Font = new Font("Cascadia Mono", 8F);
-            textBoxReceived.Location = new Point(15, 376);
+            textBoxReceived.Location = new Point(15, 405);
             textBoxReceived.Multiline = true;
             textBoxReceived.Name = "textBoxReceived";
             textBoxReceived.ReadOnly = true;
             textBoxReceived.ScrollBars = ScrollBars.Vertical;
-            textBoxReceived.Size = new Size(692, 295);
+            textBoxReceived.Size = new Size(718, 302);
             textBoxReceived.TabIndex = 5;
             // 
             // label1
@@ -111,7 +117,7 @@ namespace TGBAFlasher
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(306, 299);
+            label2.Location = new Point(236, 370);
             label2.Name = "label2";
             label2.Size = new Size(125, 25);
             label2.TabIndex = 7;
@@ -122,16 +128,17 @@ namespace TGBAFlasher
             comboCartridge.DropDownStyle = ComboBoxStyle.DropDownList;
             comboCartridge.FormattingEnabled = true;
             comboCartridge.Items.AddRange(new object[] { "4MB", "8MB", "16MB", "32MB" });
-            comboCartridge.Location = new Point(437, 296);
+            comboCartridge.Location = new Point(367, 365);
             comboCartridge.Name = "comboCartridge";
             comboCartridge.Size = new Size(165, 33);
             comboCartridge.TabIndex = 8;
             // 
             // buttonSave
             // 
-            buttonSave.Location = new Point(609, 677);
+            buttonSave.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            buttonSave.Location = new Point(625, 713);
             buttonSave.Name = "buttonSave";
-            buttonSave.Size = new Size(108, 31);
+            buttonSave.Size = new Size(108, 33);
             buttonSave.TabIndex = 9;
             buttonSave.Text = "Save";
             buttonSave.UseVisualStyleBackColor = true;
@@ -140,7 +147,7 @@ namespace TGBAFlasher
             // checkStrip
             // 
             checkStrip.AutoSize = true;
-            checkStrip.Location = new Point(482, 679);
+            checkStrip.Location = new Point(499, 716);
             checkStrip.Name = "checkStrip";
             checkStrip.Size = new Size(120, 29);
             checkStrip.TabIndex = 10;
@@ -150,10 +157,10 @@ namespace TGBAFlasher
             // statusStrip1
             // 
             statusStrip1.ImageScalingSize = new Size(24, 24);
-            statusStrip1.Items.AddRange(new ToolStripItem[] { statusLabel });
-            statusStrip1.Location = new Point(0, 729);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { statusLabel, progressBar1 });
+            statusStrip1.Location = new Point(0, 751);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(729, 32);
+            statusStrip1.Size = new Size(745, 32);
             statusStrip1.TabIndex = 11;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -165,126 +172,170 @@ namespace TGBAFlasher
             // 
             // progressBar1
             // 
-            progressBar1.Location = new Point(26, 336);
             progressBar1.Name = "progressBar1";
-            progressBar1.Size = new Size(691, 34);
-            progressBar1.TabIndex = 12;
+            progressBar1.Size = new Size(200, 24);
             // 
-            // labelTitle
+            // groupHeader
             // 
-            labelTitle.AutoSize = true;
-            labelTitle.Location = new Point(15, 62);
-            labelTitle.Name = "labelTitle";
-            labelTitle.Size = new Size(99, 25);
-            labelTitle.TabIndex = 13;
-            labelTitle.Text = "Game Title:";
+            groupHeader.Controls.Add(buttonRefreshHeader);
+            groupHeader.Controls.Add(label3);
+            groupHeader.Controls.Add(labelStartAddress);
+            groupHeader.Controls.Add(pictureLogo);
+            groupHeader.Controls.Add(labelChecksum);
+            groupHeader.Controls.Add(labelVersion);
+            groupHeader.Controls.Add(labelUnit);
+            groupHeader.Controls.Add(labelDevice);
+            groupHeader.Controls.Add(labelFixed);
+            groupHeader.Controls.Add(labelMaker);
+            groupHeader.Controls.Add(labelCode);
+            groupHeader.Controls.Add(labelTitle);
+            groupHeader.Location = new Point(15, 61);
+            groupHeader.Name = "groupHeader";
+            groupHeader.Size = new Size(718, 298);
+            groupHeader.TabIndex = 24;
+            groupHeader.TabStop = false;
+            groupHeader.Text = "GamePak Header";
             // 
-            // labelCode
+            // buttonRefreshHeader
             // 
-            labelCode.AutoSize = true;
-            labelCode.Location = new Point(14, 94);
-            labelCode.Name = "labelCode";
-            labelCode.Size = new Size(109, 25);
-            labelCode.TabIndex = 14;
-            labelCode.Text = "Game Code:";
-            // 
-            // labelMaker
-            // 
-            labelMaker.AutoSize = true;
-            labelMaker.Location = new Point(15, 157);
-            labelMaker.Name = "labelMaker";
-            labelMaker.Size = new Size(65, 25);
-            labelMaker.TabIndex = 15;
-            labelMaker.Text = "Maker:";
-            // 
-            // labelFixed
-            // 
-            labelFixed.AutoSize = true;
-            labelFixed.Location = new Point(437, 250);
-            labelFixed.Name = "labelFixed";
-            labelFixed.Size = new Size(109, 25);
-            labelFixed.TabIndex = 16;
-            labelFixed.Text = "Fixed Check:";
-            // 
-            // labelDevice
-            // 
-            labelDevice.AutoSize = true;
-            labelDevice.Location = new Point(14, 187);
-            labelDevice.Name = "labelDevice";
-            labelDevice.Size = new Size(108, 25);
-            labelDevice.TabIndex = 17;
-            labelDevice.Text = "Device type:";
-            // 
-            // labelUnit
-            // 
-            labelUnit.AutoSize = true;
-            labelUnit.Location = new Point(15, 220);
-            labelUnit.Name = "labelUnit";
-            labelUnit.Size = new Size(95, 25);
-            labelUnit.TabIndex = 18;
-            labelUnit.Text = "Unit Code:";
-            // 
-            // labelVersion
-            // 
-            labelVersion.AutoSize = true;
-            labelVersion.Location = new Point(15, 126);
-            labelVersion.Name = "labelVersion";
-            labelVersion.Size = new Size(74, 25);
-            labelVersion.TabIndex = 19;
-            labelVersion.Text = "Version:";
-            // 
-            // labelChecksum
-            // 
-            labelChecksum.AutoSize = true;
-            labelChecksum.Location = new Point(437, 225);
-            labelChecksum.Name = "labelChecksum";
-            labelChecksum.Size = new Size(97, 25);
-            labelChecksum.TabIndex = 20;
-            labelChecksum.Text = "Checksum:";
-            // 
-            // pictureLogo
-            // 
-            pictureLogo.BorderStyle = BorderStyle.FixedSingle;
-            pictureLogo.Location = new Point(291, 88);
-            pictureLogo.Name = "pictureLogo";
-            pictureLogo.Size = new Size(416, 64);
-            pictureLogo.SizeMode = PictureBoxSizeMode.StretchImage;
-            pictureLogo.TabIndex = 21;
-            pictureLogo.TabStop = false;
-            // 
-            // labelStartAddress
-            // 
-            labelStartAddress.AutoSize = true;
-            labelStartAddress.Location = new Point(15, 250);
-            labelStartAddress.Name = "labelStartAddress";
-            labelStartAddress.Size = new Size(122, 25);
-            labelStartAddress.TabIndex = 22;
-            labelStartAddress.Text = "Start Address:";
+            buttonRefreshHeader.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
+            buttonRefreshHeader.Location = new Point(270, 253);
+            buttonRefreshHeader.Name = "buttonRefreshHeader";
+            buttonRefreshHeader.Size = new Size(176, 34);
+            buttonRefreshHeader.TabIndex = 35;
+            buttonRefreshHeader.Text = "Refresh Header";
+            buttonRefreshHeader.UseVisualStyleBackColor = true;
+            buttonRefreshHeader.Click += buttonRefreshHeader_Click;
             // 
             // label3
             // 
             label3.AutoSize = true;
-            label3.Location = new Point(285, 61);
+            label3.Location = new Point(280, 35);
             label3.Name = "label3";
             label3.Size = new Size(57, 25);
-            label3.TabIndex = 23;
+            label3.TabIndex = 34;
             label3.Text = "Logo:";
+            // 
+            // labelStartAddress
+            // 
+            labelStartAddress.AutoSize = true;
+            labelStartAddress.Location = new Point(10, 224);
+            labelStartAddress.Name = "labelStartAddress";
+            labelStartAddress.Size = new Size(122, 25);
+            labelStartAddress.TabIndex = 33;
+            labelStartAddress.Text = "Start Address:";
+            // 
+            // pictureLogo
+            // 
+            pictureLogo.BorderStyle = BorderStyle.FixedSingle;
+            pictureLogo.Location = new Point(286, 62);
+            pictureLogo.Name = "pictureLogo";
+            pictureLogo.Size = new Size(416, 64);
+            pictureLogo.SizeMode = PictureBoxSizeMode.StretchImage;
+            pictureLogo.TabIndex = 32;
+            pictureLogo.TabStop = false;
+            // 
+            // labelChecksum
+            // 
+            labelChecksum.AutoSize = true;
+            labelChecksum.Location = new Point(306, 194);
+            labelChecksum.Name = "labelChecksum";
+            labelChecksum.Size = new Size(97, 25);
+            labelChecksum.TabIndex = 31;
+            labelChecksum.Text = "Checksum:";
+            // 
+            // labelVersion
+            // 
+            labelVersion.AutoSize = true;
+            labelVersion.Location = new Point(10, 100);
+            labelVersion.Name = "labelVersion";
+            labelVersion.Size = new Size(74, 25);
+            labelVersion.TabIndex = 30;
+            labelVersion.Text = "Version:";
+            // 
+            // labelUnit
+            // 
+            labelUnit.AutoSize = true;
+            labelUnit.Location = new Point(10, 194);
+            labelUnit.Name = "labelUnit";
+            labelUnit.Size = new Size(95, 25);
+            labelUnit.TabIndex = 29;
+            labelUnit.Text = "Unit Code:";
+            // 
+            // labelDevice
+            // 
+            labelDevice.AutoSize = true;
+            labelDevice.Location = new Point(9, 161);
+            labelDevice.Name = "labelDevice";
+            labelDevice.Size = new Size(108, 25);
+            labelDevice.TabIndex = 28;
+            labelDevice.Text = "Device type:";
+            // 
+            // labelFixed
+            // 
+            labelFixed.AutoSize = true;
+            labelFixed.Location = new Point(306, 224);
+            labelFixed.Name = "labelFixed";
+            labelFixed.Size = new Size(109, 25);
+            labelFixed.TabIndex = 27;
+            labelFixed.Text = "Fixed Check:";
+            // 
+            // labelMaker
+            // 
+            labelMaker.AutoSize = true;
+            labelMaker.Location = new Point(10, 131);
+            labelMaker.Name = "labelMaker";
+            labelMaker.Size = new Size(65, 25);
+            labelMaker.TabIndex = 26;
+            labelMaker.Text = "Maker:";
+            // 
+            // labelCode
+            // 
+            labelCode.AutoSize = true;
+            labelCode.Location = new Point(9, 68);
+            labelCode.Name = "labelCode";
+            labelCode.Size = new Size(109, 25);
+            labelCode.TabIndex = 25;
+            labelCode.Text = "Game Code:";
+            // 
+            // labelTitle
+            // 
+            labelTitle.AutoSize = true;
+            labelTitle.Location = new Point(10, 36);
+            labelTitle.Name = "labelTitle";
+            labelTitle.Size = new Size(99, 25);
+            labelTitle.TabIndex = 24;
+            labelTitle.Text = "Game Title:";
+            // 
+            // buttonDetectSize
+            // 
+            buttonDetectSize.Font = new Font("Segoe UI", 9F);
+            buttonDetectSize.Location = new Point(538, 365);
+            buttonDetectSize.Name = "buttonDetectSize";
+            buttonDetectSize.Size = new Size(81, 34);
+            buttonDetectSize.TabIndex = 25;
+            buttonDetectSize.Text = "Detect";
+            buttonDetectSize.UseVisualStyleBackColor = true;
+            buttonDetectSize.Click += buttonDetectSize_Click;
+            // 
+            // linkLabel1
+            // 
+            linkLabel1.AutoSize = true;
+            linkLabel1.Location = new Point(532, 16);
+            linkLabel1.Name = "linkLabel1";
+            linkLabel1.Size = new Size(185, 25);
+            linkLabel1.TabIndex = 26;
+            linkLabel1.TabStop = true;
+            linkLabel1.Text = "Made by PeevishDave";
+            linkLabel1.TextAlign = ContentAlignment.MiddleLeft;
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
             // Form1
             // 
-            ClientSize = new Size(729, 761);
-            Controls.Add(label3);
-            Controls.Add(labelStartAddress);
-            Controls.Add(pictureLogo);
-            Controls.Add(labelChecksum);
-            Controls.Add(labelVersion);
-            Controls.Add(labelUnit);
-            Controls.Add(labelDevice);
-            Controls.Add(labelFixed);
-            Controls.Add(labelMaker);
-            Controls.Add(labelCode);
-            Controls.Add(labelTitle);
-            Controls.Add(progressBar1);
+            ClientSize = new Size(745, 783);
+            Controls.Add(linkLabel1);
+            Controls.Add(buttonDetectSize);
+            Controls.Add(groupHeader);
             Controls.Add(statusStrip1);
             Controls.Add(checkStrip);
             Controls.Add(buttonSave);
@@ -302,6 +353,8 @@ namespace TGBAFlasher
             Text = "Tang GBA Flasher";
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
+            groupHeader.ResumeLayout(false);
+            groupHeader.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)pictureLogo).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -314,17 +367,21 @@ namespace TGBAFlasher
         private CheckBox checkStrip;
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel statusLabel;
-        private ProgressBar progressBar1;
-        private Label labelTitle;
-        private Label labelCode;
-        private Label labelMaker;
-        private Label labelFixed;
-        private Label labelDevice;
-        private Label labelUnit;
-        private Label labelVersion;
-        private Label labelChecksum;
-        private PictureBox pictureLogo;
-        private Label labelStartAddress;
+        private GroupBox groupHeader;
         private Label label3;
+        private Label labelStartAddress;
+        private PictureBox pictureLogo;
+        private Label labelChecksum;
+        private Label labelVersion;
+        private Label labelUnit;
+        private Label labelDevice;
+        private Label labelFixed;
+        private Label labelMaker;
+        private Label labelCode;
+        private Label labelTitle;
+        private Button buttonRefreshHeader;
+        private ToolStripProgressBar progressBar1;
+        private Button buttonDetectSize;
+        private LinkLabel linkLabel1;
     }
 }

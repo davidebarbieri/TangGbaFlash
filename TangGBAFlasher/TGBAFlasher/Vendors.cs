@@ -174,7 +174,8 @@ namespace TGBAFlasher
             codeToName["F3"] = "Extreme Entertainment/Malibu int."; 
             codeToName["FB"] = "Psycnosis"; 
             codeToName["FF"] = "LJN";
-    }
+            codeToName["GD"] = "Square Enix";
+        }
 
 
     public static string CodeToName(string makerString)

@@ -5,7 +5,8 @@
 module GBAPakReader
 (
     input wire clk,
-    input wire [3:0] cartridgeSize,
+    input wire [23:0] dumpOffset,
+    input wire [24:0] dumpLength,
     input wire startDump,
     output wire dumpCompleted,
 
@@ -58,10 +59,7 @@ module GBAPakReader
     begin
         case (state)
             STATE_IDLE: begin
-                if (cartridgeSize == 0)
-                    wordsToRead <= 96; // just header
-                else
-                    wordsToRead <= {cartridgeSize, 21'b0};
+                wordsToRead <= dumpLength;
                 output_Send <= 0;
                 cs_value <= 1;
                 if (startDump)
@@ -73,8 +71,8 @@ module GBAPakReader
             end
             STATE_SET_ADDRESS: begin
                 // set address
-                gbaDAOutput <= 0;
-                gbaAddressHiOutput <= 0;
+                gbaDAOutput <= dumpOffset[15:0];
+                gbaAddressHiOutput <= dumpOffset[23:16];
                 state <= state + 1;
             end
             // DELAY

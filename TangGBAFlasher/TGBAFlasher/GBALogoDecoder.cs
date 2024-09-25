@@ -4,13 +4,18 @@ namespace TGBAFlasher
 {
     public class GBALogoDecoder
     {
-        public static Bitmap DecodeLogo(byte[] header)
+        public static Bitmap? DecodeLogo(byte[] header)
         {
             byte[] encodedLogo = new byte[HuffmanHeaderBios.Length + 156];
             Array.Copy(HuffmanHeaderBios, encodedLogo, HuffmanHeaderBios.Length);
             Array.Copy(header, 4, encodedLogo, HuffmanHeaderBios.Length, 156);
 
-            byte[] logo = Decrypt(HuffmanDecode(encodedLogo));
+            byte[]? logo = Decrypt(HuffmanDecode(encodedLogo));
+
+            if (logo == null)
+            {
+                return null;
+            }
 
             Bitmap bmp = new Bitmap(LogoWidth, LogoHeight);
 
@@ -28,8 +33,11 @@ namespace TGBAFlasher
             return bmp;
         }
 
-        static byte[] Decrypt(byte[] encrypted)
+        static byte[]? Decrypt(byte[]? encrypted)
         {
+            if (encrypted == null)
+                return null;
+
             uint size = (uint)encrypted[1] + ((uint)encrypted[2] << 8) + ((uint)encrypted[3] << 16);
 
             byte[] buffer = new byte[size];
@@ -45,7 +53,7 @@ namespace TGBAFlasher
             return buffer;
         }
 
-        static byte[] HuffmanDecode(byte[] encoded)
+        static byte[]? HuffmanDecode(byte[] encoded)
         {
             int codePosition = 4;
             int treePosition = 5;
@@ -68,6 +76,9 @@ namespace TGBAFlasher
             {
                 if (codeShift == 0x00)
                 {
+                    if (codePosition < 0 || (codePosition + 3 >= encoded.Length))
+                        return null;
+
                     currentCode = (uint)(encoded[codePosition] | (encoded[codePosition + 1] << 8) |
                                          (encoded[codePosition + 2] << 16) | (encoded[codePosition + 3] << 24));
                     codePosition += 4;
