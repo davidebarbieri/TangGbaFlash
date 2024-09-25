@@ -11,8 +11,21 @@ and proceeds to display the cartridge header. It then provides an option to down
   <img src="https://github.com/davidebarbieri/TangGbaFlash/blob/main/images/client.png?raw=true" alt="Client" width="280"/>
 </p>
 
-## GPIO Connections
+## How the Hardware Works
 
+The hardware operates by receiving commands via UART in the form of single bytes. The following table lists the available commands:
+
+| Command	 | Description | 
+| -------- | -------- |
+| 'h'	(0x68) |  Performs a dump of the header (192 bytes). | 
+| 'a'	(0x61) | Downloads a 4MB ROM. | 
+| 'b'	(0x62) | Downloads an 8MB ROM. | 
+| 'c'	(0x63) | Downloads a 16MB ROM. | 
+| 'd'	(0x64) | Downloads a 32MB ROM. | 
+
+Each command triggers an operation that prompts the hardware to read from the cartridge and send a specific amount of data through the UART to the client.
+
+## GPIO Connections
 
 | GBAPak   | GPIO PIN |
 | -------- | -------- |
