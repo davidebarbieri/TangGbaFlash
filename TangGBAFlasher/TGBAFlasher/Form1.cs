@@ -255,7 +255,7 @@ namespace TGBAFlasher
                             labelVersion.Text = "Version: " + header[188].ToString("X2");
                             labelChecksum.Text = "Checksum: " + header[189].ToString("X2") + " (" + (flasher.ChecksumTest(header, header[189]) ? "OK" : "BAD") + ")";
 
-                            var startAddress = 4 + (((int)header[0]) << 2) +
+                            var startAddress = 8 + (((int)header[0]) << 2) +
                                                 (((int)header[1]) << 10) +
                                                 (((int)header[2]) << 18);
 
