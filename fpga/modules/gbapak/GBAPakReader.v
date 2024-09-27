@@ -5,8 +5,8 @@
 module GBAPakReader
 (
     input wire clk,
-    input wire [23:0] dumpOffset,
-    input wire [24:0] dumpLength,
+    input wire [23:0] dumpStartAddress,
+    input wire [23:0] dumpEndAddress,
     input wire startDump,
     output wire dumpCompleted,
 
@@ -39,19 +39,19 @@ module GBAPakReader
     reg rd_value = 1;
     reg cs_value = 1;
 
-    reg [15:0] gbaDAOutput = 0;
-    reg [7:0] gbaAddressHiOutput = 0;
+    // need to store and update whole address to support some repro cards
+    reg [23:0] gbaAddress = 0;
     reg isGbaDAOutputMode = 0;
 
-    reg [24:0] wordsToRead = 0;
+    reg [15:0] dataRead = 0;
 
     assign pin_gbaRD = rd_value;
     assign pin_gbaCS = cs_value;
     assign pin_gbaWR = 1;
     assign pin_gbaCS2 = 1;
 
-    assign pin_gbaDataAddressLo = isGbaDAOutputMode ? gbaDAOutput : 16'dz;
-    assign pin_gbaAddressHi = gbaAddressHiOutput;
+    assign pin_gbaDataAddressLo = isGbaDAOutputMode ? gbaAddress[15:0] : 16'dz;
+    assign pin_gbaAddressHi = gbaAddress[23:16];
 
     assign dumpCompleted = state == STATE_IDLE;
 
@@ -59,7 +59,6 @@ module GBAPakReader
     begin
         case (state)
             STATE_IDLE: begin
-                wordsToRead <= dumpLength;
                 output_Send <= 0;
                 cs_value <= 1;
                 if (startDump)
@@ -71,8 +70,7 @@ module GBAPakReader
             end
             STATE_SET_ADDRESS: begin
                 // set address
-                gbaDAOutput <= dumpOffset[15:0];
-                gbaAddressHiOutput <= dumpOffset[23:16];
+                gbaAddress <= dumpStartAddress;
                 state <= state + 1;
             end
             // DELAY
@@ -83,7 +81,6 @@ module GBAPakReader
             // DELAY
             STATE_DISABLE_ADDRESS: begin
                 isGbaDAOutputMode <= 0;
-                gbaAddressHiOutput <= 0;
                 state <= state + 1;
             end
             // DELAY
@@ -94,14 +91,14 @@ module GBAPakReader
             end
             // DELAY
             STATE_READ_DATA: begin
-                gbaDAOutput <= pin_gbaDataAddressLo;
+                dataRead <= pin_gbaDataAddressLo;
                 state <= state + 1;
             end
             STATE_READ_DATA_0: begin
                 rd_value <= 1;
                 if (output_IsReady) begin
                     // Read data
-                    output_Data <= gbaDAOutput[7:0];
+                    output_Data <= dataRead[7:0];
                     output_Send <= 1;
 
                     state <= state + 1;
@@ -112,9 +109,8 @@ module GBAPakReader
             STATE_READ_DATA_1: begin
                 if (output_IsReady) begin
                     // Read data
-                    output_Data <= gbaDAOutput[15:8];
+                    output_Data <= dataRead[15:8];
                     output_Send <= 1;
-                    wordsToRead <= wordsToRead - 1;
 
                     state <= state + 1;
                 end
@@ -124,10 +120,13 @@ module GBAPakReader
             STATE_ADDRESS_INCREMENT: begin
                 output_Send <= 0;
 
-                if (wordsToRead == 0)
+                if (gbaAddress == dumpEndAddress)
                     state <= STATE_IDLE;
                 else
                     state <= STATE_SEND_ADDRESS + 1; // wait and restart
+
+                // done in order to support some repro cartridges
+                gbaAddress <= gbaAddress + 24'b1;
                 
             end
             default: // Wait

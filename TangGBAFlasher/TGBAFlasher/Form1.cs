@@ -48,6 +48,7 @@ namespace TGBAFlasher
             buttonSave.Enabled = false;
             buttonRefreshHeader.Enabled = false;
             buttonDetectSize.Enabled = false;
+            progressBar1.Visible = false;
         }
 
         private void buttonOpenPort_Click(object sender, EventArgs e)
@@ -104,6 +105,7 @@ namespace TGBAFlasher
                 buttonDownload.Enabled = false;
                 buttonDetectSize.Enabled = false;
 
+                progressBar1.Visible = true;
                 progressBar1.Value = 0;
                 Task.Run(() => flasher.DownloadROM(cartIndex, (percentage) =>
                 {
@@ -115,7 +117,8 @@ namespace TGBAFlasher
                 {
                     Invoke(new MethodInvoker(delegate
                     {
-                        progressBar1.Value = 100;
+                        progressBar1.Visible = false;
+                        progressBar1.Value = 0;
                         statusLabel.Text = "ROM downloaded";
                         textBoxReceived.Text = PrintHex(task.Result);
 
